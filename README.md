@@ -2,7 +2,7 @@
 Hilbert Space-Filling Curve Partitioning for Parallel Computing
 
 # Credit
-The initial code was from PHG project, an open source project.
+The initial code was from PHG project, an open source adaptive finite element project.
 
 # Purpose
 The algorithm partitions a distributed mesh/grid into a balanced distribution such that the new load imbalance factor less than
