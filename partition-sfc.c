@@ -188,7 +188,7 @@ void phgSFCInvHilbert3D(SFC_ELEM *x, SFC_INT n)
     }
 }
 
-double phgPartition1DV1(SFC_DOTS *dts, SFC_INT nelem, int np, MPI_Comm comm, int *itr, SFC_PTNS **save_ptn)
+double phgPartition1DV1(SFC_DOTS *dts, SFC_INT nelem, int np, MPI_Comm comm, double lif, int *itr, SFC_PTNS **save_ptn)
 {
     int npctss = (np - 1) * CUTS + 1;
     SFC_PTNS *ptn;
@@ -212,6 +212,7 @@ double phgPartition1DV1(SFC_DOTS *dts, SFC_INT nelem, int np, MPI_Comm comm, int
 
     assert((CUTS >= 8) && (CUTS <= 30));
     assert(nelem >= 0 && np >= 1);
+
     if (nelem > 0) {
         assert(dts != NULL);
     }
@@ -245,6 +246,13 @@ double phgPartition1DV1(SFC_DOTS *dts, SFC_INT nelem, int np, MPI_Comm comm, int
     else if (dsum < 0.) {
         printf("negative weights.\n");
         MPI_Abort(comm, -1);
+    }
+
+    if (lif < 1 || lif > 2) {
+        hsfc_lb_tol = SFC_LBE;
+    }
+    else {
+        hsfc_lb_tol = lif;
     }
 
     ptsum = malloc(np * sizeof(*ptsum));
@@ -518,7 +526,8 @@ double phgPartition1DV1(SFC_DOTS *dts, SFC_INT nelem, int np, MPI_Comm comm, int
 
 /* Hilbert space-filling curve partitioner */
 /* for 3d space, can be extended to 2d and 3d with slight change */
-double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm newcomm, int remap, SFC_PTNS **save_ptn, int **part)
+double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm newcomm, double lif, int remap,
+        SFC_PTNS **save_ptn, int **part)
 {
     int nprocs, rank;
     int onprocs;
@@ -526,7 +535,7 @@ double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm ne
     SFC_FLOAT out[6];    /* min and max coordinats */
     SFC_FLOAT ext[3];    /* scaling factor */
     SFC_FLOAT temp;
-    SFC_FLOAT lif = 1.0;
+    SFC_FLOAT real_lif = 1.0;
     SFC_INT i;
     SFC_FLOAT t[3];
     int fail = SFC_FALSE;
@@ -643,19 +652,19 @@ double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm ne
             x[i].part = gid % nprocs;
         }
 
-        lif = nprocs * 1. / nleaf_global;
+        real_lif = nprocs * 1. / nleaf_global;
     }
     else {
         int itr;
 
-        lif = phgPartition1DV1(dots, nleaf, nprocs, oldcomm, &itr, save_ptn);
+        real_lif = phgPartition1DV1(dots, nleaf, nprocs, oldcomm, lif, &itr, save_ptn);
 
         /* assign */
         for (i = 0; i < nleaf; i++) {
             x[i].part = dots[i].pn;
         }
 
-        if (itr >= MAXLOOPS && lif >= 1.5) fail = SFC_TRUE;
+        if (itr >= MAXLOOPS && real_lif >= 1.5) fail = SFC_TRUE;
     }
 
     free(dots);
@@ -684,10 +693,10 @@ double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm ne
         }
 
         if (rr == 0) {
-            lif = 1.;
+            real_lif = 1.;
         }
         else {
-            lif = (kk + 1) * nprocs * 1. / nleaf_global;
+            real_lif = (kk + 1) * nprocs * 1. / nleaf_global;
         }
     }
 
@@ -735,7 +744,7 @@ double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm ne
 
     }
 
-    return lif;
+    return real_lif;
 }
 
 /* phgPartitionRemap remaps the partitions such that the

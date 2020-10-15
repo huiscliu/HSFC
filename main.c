@@ -6,13 +6,14 @@
 
 int main(int argc, char **argv)
 {
-    int i, n, gs = 0, rank, nprocs;
+    int i, n, n_total = 0, n_max = 0, rank, nprocs;
     SFC_ELEM *x;
     MPI_Comm comm = MPI_COMM_WORLD;
-    double lif;
+    double real_lif;
     size_t seed;
     SFC_PTNS *save_ptn = NULL;
     int *part = NULL;
+    double lif = 1.02;
 
     MPI_Init(&argc, &argv);
 
@@ -24,7 +25,9 @@ int main(int argc, char **argv)
     srand(rand() + rank);
 
     n = 10 + rand() % 300000;
-    MPI_Scan(&n, &gs, 1, MPI_INT, MPI_SUM, comm);
+    MPI_Allreduce(&n, &n_total, 1, MPI_INT, MPI_SUM, comm);
+    MPI_Allreduce(&n, &n_max, 1, MPI_INT, MPI_MAX, comm);
+
     printf("elements in rank %2d: %d\n", rank, n);
 
     x = malloc(n * sizeof(*x));
@@ -38,9 +41,13 @@ int main(int argc, char **argv)
         x[i].weight = 1.;
     }
 
-    lif = phgPartitionSFC(x, n, comm, comm, SFC_TRUE, &save_ptn, &part);
+    real_lif = phgPartitionSFC(x, n, comm, comm, lif, SFC_TRUE, &save_ptn, &part);
     if (rank == 0) {
-        printf("\nload balance factor: %f\n\n", lif);
+        printf("\ntotal elements: %d, max elements: %d\n", n_total, n_max);
+        printf("input load balance factor tolerance: %f\n\n", n_max * nprocs * 1. / n_total);
+        printf("load balance factor tolerance: %f\n", lif);
+
+        printf("real load balance factor after partition: %f\n\n", real_lif);
 
         if (save_ptn != NULL) {
             for (i = 0; i < nprocs; i++) {

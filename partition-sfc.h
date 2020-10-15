@@ -60,7 +60,7 @@ extern "C" {
  *
  * */
 
-double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm newcomm, int remap,
+double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm newcomm, double lif, int remap,
         SFC_PTNS **save_ptn, int **part);
 
 /*------------------------- Internal Functions ------------------------*/
@@ -69,7 +69,7 @@ double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm ne
 /* inverse Hilbert SFC                   */
 void phgSFCInvHilbert3D(SFC_ELEM *x, SFC_INT n);
 
-double phgPartition1DV1(SFC_DOTS *dts, SFC_INT lx, int p, MPI_Comm comm, int *itr, SFC_PTNS **save_ptn);
+double phgPartition1DV1(SFC_DOTS *dts, SFC_INT lx, int p, MPI_Comm comm, double lif, int *itr, SFC_PTNS **save_ptn);
 
 int phgPartitionRemap(MPI_Comm comm, const double datasize[], int perm[], MPI_Comm newcomm);
 
