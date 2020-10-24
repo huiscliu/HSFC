@@ -50,7 +50,19 @@ extern "C" {
 
 /* Hilbert space-filling curve partitioner
  *
+ * x is input element information. coordinates and weight should be set. part returns the partition id
+ * and sfc is the computed value for Hilbert space-filling curve, which belongs to [0, 1].
+ *
  * nleaf should be greater than 0
+ *
+ * oldcomm is the communicator that contains the initial distribution.
+ *
+ * newcomm is the communicator that accepts new distribution. Usually the newcomm is the oldcomm. However,
+ * some applications may change communicator, such as adaptive finite element/volume methods.
+ *
+ * lif is the imbalance factor. The computed partion should have smaller imbalance factor.
+ *
+ * remap means if re-order partion such as data migration is minimized.
  *
  * save_ptn is optional. If save_ptn is non-NULL, part should be non-NULL.
  * The length of save_ptn and part is the size of newcomm.
