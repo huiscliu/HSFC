@@ -60,13 +60,13 @@ extern "C" {
  * newcomm is the communicator that accepts new distribution. Usually the newcomm is the oldcomm. However,
  * some applications may change communicator, such as adaptive finite element/volume methods.
  *
- * lif is the imbalance factor. The computed partion should have smaller imbalance factor.
+ * lif is the imbalance factor. The computed partition should have smaller imbalance factor.
  *
- * remap means if re-order partion such as data migration is minimized.
+ * remap means if re-order partition such as data migration is minimized.
  *
  * save_ptn is optional. If save_ptn is non-NULL, part should be non-NULL.
  * The length of save_ptn and part is the size of newcomm.
- * save_ptn stores the partion intervals, which is partitioned as [low, high)
+ * save_ptn stores the partition intervals, which is partitioned as [low, high)
  *
  * part[i] is the rank of i-th interval.
  *
