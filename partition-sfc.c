@@ -22,18 +22,6 @@ typedef SFC_FLOAT HSFC_FARY[2];
  * converte coordinates in [0,1]x[0,1]x[0,1] to [0, 1]
  * n <= the length of array x 
  * 
- * Here we give two versions, the first one is general method
- * that based on table, which is based on Zoltan's.
- * We extented original implement, and we fixed some bugs.
- * The second one is based on an improved algorithm, which we
- * modified the first one. The time complexity is O(r), 
- * r = log2(max(x, y, z)) + 1. In general, r < n;
- * Both are fast. User can choose any one.
- * If grid has big coordinates much more than small coordinates, the 
- *   first maybe better.
- * If grid has small coordinats much more than bigs ones, the second
- *   maybe better.
- *
  * assume sizeof(SFC_INT) >= 4
  * **************************************************************/
 
