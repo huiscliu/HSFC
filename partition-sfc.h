@@ -53,7 +53,7 @@ extern "C" {
  * x is input element information. coordinates and weight should be set. part returns the partition id
  * and sfc is the computed value for Hilbert space-filling curve, which belongs to [0, 1].
  *
- * nleaf should be greater than 0
+ * nelems is number of elements, which must be greater than 0
  *
  * oldcomm is the communicator that contains the initial distribution.
  *
@@ -72,7 +72,7 @@ extern "C" {
  *
  * */
 
-double phgPartitionSFC(SFC_ELEM *x, SFC_INT nleaf, MPI_Comm oldcomm, MPI_Comm newcomm, double lif, int remap,
+double phgPartitionSFC(SFC_ELEM *x, SFC_INT nelems, MPI_Comm oldcomm, MPI_Comm newcomm, double lif, int remap,
         SFC_PTNS **save_ptn, int **part);
 
 /*------------------------- Internal Functions ------------------------*/
